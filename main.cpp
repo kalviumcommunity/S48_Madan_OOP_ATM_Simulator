@@ -11,28 +11,28 @@ private:
 
 public:
     BankAccount(string name, int number, double initialBalance, int accountPIN) {
-        accountHolderName = name;
-        accountNumber = number;
-        balance = initialBalance;
-        pin = accountPIN;
+        this->accountHolderName = name;
+        this->accountNumber = number;
+        this->balance = initialBalance;
+        this->pin = accountPIN;
     }
 
     bool validatePIN(int enteredPIN) {
-        return enteredPIN == pin;
+        return this->pin == enteredPIN;
     }
 
     int getAccountNumber() {
-        return accountNumber;
+        return this->accountNumber;
     }
 
     string getAccountHolderName() {
-        return accountHolderName;
+        return this->accountHolderName;
     }
 
     void deposit(double amount) {
         if (amount >= 500) {
-            balance += amount;
-            cout << "Deposit successful! New Balance: Rs" << balance << endl;
+            this->balance += amount;
+            cout << "Deposit successful! New Balance: Rs" << this->balance << endl;
         } else {
             cout << "Minimum deposit amount is Rs 500!" << endl;
         }
@@ -40,11 +40,11 @@ public:
 
     void withdraw(double amount) {
         if (amount >= 500) {
-            if (amount <= balance) {
-                balance -= amount;
-                cout << "Withdrawal successful! Remaining Balance: Rs" << balance << endl;
+            if (amount <= this->balance) {
+                this->balance -= amount;
+                cout << "Withdrawal successful! Remaining Balance: Rs" << this->balance << endl;
             } else {
-                cout << "Insufficient funds! Available Balance: Rs" << balance << endl;
+                cout << "Insufficient funds! Available Balance: Rs" << this->balance << endl;
             }
         } else {
             cout << "Minimum withdrawal amount is Rs 500!" << endl;
@@ -52,9 +52,9 @@ public:
     }
 
     void displayAccountDetails() {
-        cout << "Account Holder: " << accountHolderName << endl;
-        cout << "Account Number: " << accountNumber << endl;
-        cout << "Balance: Rs" << balance << endl;
+        cout << "Account Holder: " << this->accountHolderName << endl;
+        cout << "Account Number: " << this->accountNumber << endl;
+        cout << "Balance: Rs" << this->balance << endl;
     }
 };
 
@@ -67,8 +67,8 @@ public:
         for (int i = 0; i < totalAccounts; ++i) {
             if (accounts[i].getAccountNumber() == enteredAccountNumber) {
                 if (accounts[i].validatePIN(enteredPIN)) {
-                    currentAccount = &accounts[i];
-                    cout << "Welcome, " << currentAccount->getAccountHolderName() << "!" << endl;
+                    this->currentAccount = &accounts[i];
+                    cout << "Welcome, " << this->currentAccount->getAccountHolderName() << "!" << endl;
                     return true;
                 } else {
                     cout << "Invalid PIN! Access denied." << endl;
@@ -96,19 +96,19 @@ public:
                 case 1:
                     cout << "Enter amount to deposit: ";
                     cin >> amount;
-                    depositMoney(amount);
+                    this->depositMoney(amount);
                     break;
                 case 2:
                     cout << "Enter amount to withdraw: ";
                     cin >> amount;
-                    withdrawMoney(amount);
+                    this->withdrawMoney(amount);
                     break;
                 case 3:
-                    displayBalance();
+                    this->displayBalance();
                     break;
                 case 4:
                     cout << "Thank you for using the ATM!" << endl;
-                    clearAccount();
+                    this->clearAccount();
                     break;
                 default:
                     cout << "Invalid choice! Please try again." << endl;
@@ -117,31 +117,31 @@ public:
     }
 
     void depositMoney(double amount) {
-        if (currentAccount) {
-            currentAccount->deposit(amount);
+        if (this->currentAccount) {
+            this->currentAccount->deposit(amount);
         } else {
             cout << "No account selected!" << endl;
         }
     }
 
     void withdrawMoney(double amount) {
-        if (currentAccount) {
-            currentAccount->withdraw(amount);
+        if (this->currentAccount) {
+            this->currentAccount->withdraw(amount);
         } else {
             cout << "No account selected!" << endl;
         }
     }
 
     void displayBalance() {
-        if (currentAccount) {
-            currentAccount->displayAccountDetails();
+        if (this->currentAccount) {
+            this->currentAccount->displayAccountDetails();
         } else {
             cout << "No account selected!" << endl;
         }
     }
 
     void clearAccount() {
-        currentAccount = nullptr;
+        this->currentAccount = nullptr;
         cout << "Session ended. Thank you for using the ATM!" << endl;
     }
 };
