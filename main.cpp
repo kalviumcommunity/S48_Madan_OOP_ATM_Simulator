@@ -150,7 +150,17 @@ int main() {
     BankAccount accounts[] = {
         BankAccount("John Doe", 123456, 500.0, 1234),
         BankAccount("Jane Smith", 789012, 1000.0, 5678),
-        BankAccount("Alice Johnson", 345678, 1500.0, 9012)
+        BankAccount("Alice Johnson", 345678, 1500.0, 9012),
+        BankAccount("Michael Brown", 456789, 2000.0, 2345),
+        BankAccount("Emily Davis", 567890, 1200.0, 6789),
+        BankAccount("Chris Wilson", 678901, 750.0, 3456),
+        BankAccount("Olivia Garcia", 789012, 3000.0, 7890),
+        BankAccount("Daniel Martinez", 890123, 500.0, 1235),
+        BankAccount("Sophia Lee", 901234, 1500.0, 6781),
+        BankAccount("Ethan Harris", 123789, 2200.0, 9876),
+        BankAccount("Mia Clark", 234890, 950.0, 5432),
+        BankAccount("James Lewis", 345901, 1700.0, 6543),
+        BankAccount("Ava Robinson", 456012, 1250.0, 3210)
     };
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
 
