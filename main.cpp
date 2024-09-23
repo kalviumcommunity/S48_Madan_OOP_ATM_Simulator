@@ -19,10 +19,9 @@ public:
         totalAccounts++; 
     }
 
-    // Destructor
     ~BankAccount() {
         cout << "BankAccount object for " << accountHolderName << " destroyed" << endl;
-        totalAccounts--; 
+        totalAccounts--;  
     }
 
     static int getTotalAccounts() {
@@ -75,7 +74,7 @@ int BankAccount::totalAccounts = 0;
 class ATM {
 private:
     BankAccount* currentAccount;
-    static int totalATMs; 
+    static int totalATMs;  
 
 public:
     ATM() : currentAccount(nullptr) {
@@ -196,7 +195,7 @@ int main() {
         new BankAccount("Ethan Harris", 123789, 2200.0, 9876),
         new BankAccount("Mia Clark", 234890, 950.0, 5432),
         new BankAccount("James Lewis", 345901, 1700.0, 6543),
-        new BankAccount("Ava Robinson", 456012, 1250.0, 3210) 
+        new BankAccount("Ava Robinson", 456012, 1250.0, 3210)
     };
     
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
