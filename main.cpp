@@ -17,6 +17,10 @@ public:
         this->pin = accountPIN;
     }
 
+    ~BankAccount() {
+        cout << "BankAccount object for " << accountHolderName << " destroyed" << endl;
+    }
+
     bool validatePIN(int enteredPIN) {
         return this->pin == enteredPIN;
     }
@@ -63,11 +67,19 @@ private:
     BankAccount* currentAccount;
 
 public:
-    bool selectAccount(BankAccount accounts[], int totalAccounts, int enteredAccountNumber, int enteredPIN) {
+    ATM() : currentAccount(nullptr) {
+        cout << "ATM object created" << endl;
+    }
+
+    ~ATM() {
+        cout << "ATM object destroyed" << endl;
+    }
+
+    bool selectAccount(BankAccount* accounts[], int totalAccounts, int enteredAccountNumber, int enteredPIN) {
         for (int i = 0; i < totalAccounts; ++i) {
-            if (accounts[i].getAccountNumber() == enteredAccountNumber) {
-                if (accounts[i].validatePIN(enteredPIN)) {
-                    this->currentAccount = &accounts[i];
+            if (accounts[i]->getAccountNumber() == enteredAccountNumber) {
+                if (accounts[i]->validatePIN(enteredPIN)) {
+                    this->currentAccount = accounts[i];
                     cout << "Welcome, " << this->currentAccount->getAccountHolderName() << "!" << endl;
                     return true;
                 } else {
@@ -141,30 +153,36 @@ public:
     }
 
     void clearAccount() {
-        this->currentAccount = nullptr;
-        cout << "Session ended. Thank you for using the ATM!" << endl;
+        if (this->currentAccount) {
+            delete this->currentAccount;  
+            this->currentAccount = nullptr;
+            cout << "Session ended." << endl;
+        } else {
+            cout << "No account selected!" << endl;
+        }
     }
 };
 
 int main() {
-    BankAccount accounts[] = {
-        BankAccount("John Doe", 123456, 500.0, 1234),
-        BankAccount("Jane Smith", 789012, 1000.0, 5678),
-        BankAccount("Alice Johnson", 345678, 1500.0, 9012),
-        BankAccount("Michael Brown", 456789, 2000.0, 2345),
-        BankAccount("Emily Davis", 567890, 1200.0, 6789),
-        BankAccount("Chris Wilson", 678901, 750.0, 3456),
-        BankAccount("Olivia Garcia", 789012, 3000.0, 7890),
-        BankAccount("Daniel Martinez", 890123, 500.0, 1235),
-        BankAccount("Sophia Lee", 901234, 1500.0, 6781),
-        BankAccount("Ethan Harris", 123789, 2200.0, 9876),
-        BankAccount("Mia Clark", 234890, 950.0, 5432),
-        BankAccount("James Lewis", 345901, 1700.0, 6543),
-        BankAccount("Ava Robinson", 456012, 1250.0, 3210)
+    BankAccount* accounts[] = {
+        new BankAccount("John Doe", 123456, 500.0, 1234),
+        new BankAccount("Jane Smith", 789012, 1000.0, 5678),
+        new BankAccount("Alice Johnson", 345678, 1500.0, 9012),
+        new BankAccount("Michael Brown", 456789, 2000.0, 2345),
+        new BankAccount("Emily Davis", 567890, 1200.0, 6789),
+        new BankAccount("Chris Wilson", 678901, 750.0, 3456),
+        new BankAccount("Olivia Garcia", 789012, 3000.0, 7890),
+        new BankAccount("Daniel Martinez", 890123, 500.0, 1235),
+        new BankAccount("Sophia Lee", 901234, 1500.0, 6781),
+        new BankAccount("Ethan Harris", 123789, 2200.0, 9876),
+        new BankAccount("Mia Clark", 234890, 950.0, 5432),
+        new BankAccount("James Lewis", 345901, 1700.0, 6543),
+        new BankAccount("Ava Robinson", 456012, 1250.0, 3210)
     };
+    
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
 
-    ATM myATM;
+    ATM* myATM = new ATM();
 
     int enteredAccountNumber, enteredPIN;
 
@@ -173,9 +191,11 @@ int main() {
     cout << "Enter PIN: ";
     cin >> enteredPIN;
 
-    if (myATM.selectAccount(accounts, totalAccounts, enteredAccountNumber, enteredPIN)) {
-        myATM.showMenu(); 
+    if (myATM->selectAccount(accounts, totalAccounts, enteredAccountNumber, enteredPIN)) {
+        myATM->showMenu();
     }
+
+    delete myATM;  
 
     return 0;
 }
