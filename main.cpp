@@ -8,6 +8,7 @@ private:
     int accountNumber;
     double balance;
     int pin; 
+    static int totalAccounts; 
 
 public:
     BankAccount(string name, int number, double initialBalance, int accountPIN) {
@@ -15,10 +16,17 @@ public:
         this->accountNumber = number;
         this->balance = initialBalance;
         this->pin = accountPIN;
+        totalAccounts++; 
     }
 
+    // Destructor
     ~BankAccount() {
         cout << "BankAccount object for " << accountHolderName << " destroyed" << endl;
+        totalAccounts--; 
+    }
+
+    static int getTotalAccounts() {
+        return totalAccounts;
     }
 
     bool validatePIN(int enteredPIN) {
@@ -62,17 +70,26 @@ public:
     }
 };
 
+int BankAccount::totalAccounts = 0;
+
 class ATM {
 private:
     BankAccount* currentAccount;
+    static int totalATMs; 
 
 public:
     ATM() : currentAccount(nullptr) {
+        totalATMs++;  
         cout << "ATM object created" << endl;
     }
 
     ~ATM() {
+        totalATMs--;  
         cout << "ATM object destroyed" << endl;
+    }
+
+    static int getTotalATMs() {
+        return totalATMs;
     }
 
     bool selectAccount(BankAccount* accounts[], int totalAccounts, int enteredAccountNumber, int enteredPIN) {
@@ -163,6 +180,8 @@ public:
     }
 };
 
+int ATM::totalATMs = 0;
+
 int main() {
     BankAccount* accounts[] = {
         new BankAccount("John Doe", 123456, 500.0, 1234),
@@ -177,7 +196,7 @@ int main() {
         new BankAccount("Ethan Harris", 123789, 2200.0, 9876),
         new BankAccount("Mia Clark", 234890, 950.0, 5432),
         new BankAccount("James Lewis", 345901, 1700.0, 6543),
-        new BankAccount("Ava Robinson", 456012, 1250.0, 3210)
+        new BankAccount("Ava Robinson", 456012, 1250.0, 3210) 
     };
     
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
@@ -194,6 +213,9 @@ int main() {
     if (myATM->selectAccount(accounts, totalAccounts, enteredAccountNumber, enteredPIN)) {
         myATM->showMenu();
     }
+
+    cout << "Total Bank Accounts: " << BankAccount::getTotalAccounts() << endl;
+    cout << "Total ATMs: " << ATM::getTotalATMs() << endl;
 
     delete myATM;  
 
