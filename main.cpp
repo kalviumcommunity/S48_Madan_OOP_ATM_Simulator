@@ -4,11 +4,11 @@ using namespace std;
 
 class BankAccount {
 private:
-    string accountHolderName;
-    int accountNumber;
-    double balance;
-    int pin;
-    static int totalAccounts;
+    string accountHolderName;  
+    int accountNumber;         
+    double balance;            
+    int pin;                   
+    static int totalAccounts;  
 
 public:
     BankAccount(string name, int number, double initialBalance, int accountPIN) {
@@ -24,10 +24,12 @@ public:
         totalAccounts--;
     }
 
+    
     static int getTotalAccounts() {
         return totalAccounts;
     }
 
+    
     void setAccountHolderName(string name) {
         this->accountHolderName = name;
     }
@@ -43,6 +45,7 @@ public:
     void setPIN(int pin) {
         this->pin = pin;
     }
+
 
     string getAccountHolderName() const {
         return this->accountHolderName;
@@ -60,6 +63,7 @@ public:
         return this->pin;
     }
 
+    
     bool validatePIN(int enteredPIN) const {
         return this->pin == enteredPIN;
     }
@@ -86,6 +90,7 @@ public:
         }
     }
 
+    
     void displayAccountDetails() const {
         cout << "Account Holder: " << getAccountHolderName() << endl;
         cout << "Account Number: " << getAccountNumber() << endl;
@@ -97,8 +102,8 @@ int BankAccount::totalAccounts = 0;
 
 class ATM {
 private:
-    BankAccount* currentAccount;
-    static int totalATMs;
+    BankAccount* currentAccount;  
+    static int totalATMs;         
 
 public:
     ATM() : currentAccount(nullptr) {
@@ -111,18 +116,22 @@ public:
         cout << "ATM object destroyed" << endl;
     }
 
+    
     static int getTotalATMs() {
         return totalATMs;
     }
 
+    
     void setCurrentAccount(BankAccount* account) {
         this->currentAccount = account;
     }
 
+    
     BankAccount* getCurrentAccount() const {
         return this->currentAccount;
     }
 
+    
     bool selectAccount(BankAccount* accounts[], int totalAccounts, int enteredAccountNumber, int enteredPIN) {
         for (int i = 0; i < totalAccounts; ++i) {
             if (accounts[i]->getAccountNumber() == enteredAccountNumber) {
@@ -140,6 +149,7 @@ public:
         return false;
     }
 
+   
     void showMenu() {
         int choice;
         double amount;
@@ -176,9 +186,10 @@ public:
         } while (choice != 4);
     }
 
+   
     void depositMoney(double amount) {
         if (getCurrentAccount()) {
-            getCurrentAccount()->deposit(amount);
+            getCurrentAccount()->deposit(amount);  
         } else {
             cout << "No account selected!" << endl;
         }
@@ -186,7 +197,7 @@ public:
 
     void withdrawMoney(double amount) {
         if (getCurrentAccount()) {
-            getCurrentAccount()->withdraw(amount);
+            getCurrentAccount()->withdraw(amount);  
         } else {
             cout << "No account selected!" << endl;
         }
@@ -194,7 +205,7 @@ public:
 
     void displayBalance() {
         if (getCurrentAccount()) {
-            getCurrentAccount()->displayAccountDetails();
+            getCurrentAccount()->displayAccountDetails();  
         } else {
             cout << "No account selected!" << endl;
         }
