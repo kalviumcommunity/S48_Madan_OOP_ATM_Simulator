@@ -11,6 +11,14 @@ private:
     static int totalAccounts;  
 
 public:
+    BankAccount() {
+        accountHolderName = "Unknown";
+        accountNumber = 0;
+        balance = 0.0;
+        pin = 0000;
+        totalAccounts++;
+    }
+
     BankAccount(string name, int number, double initialBalance, int accountPIN) {
         setAccountHolderName(name);
         setAccountNumber(number);
@@ -24,12 +32,10 @@ public:
         totalAccounts--;
     }
 
-    
     static int getTotalAccounts() {
         return totalAccounts;
     }
 
-    
     void setAccountHolderName(string name) {
         this->accountHolderName = name;
     }
@@ -45,7 +51,6 @@ public:
     void setPIN(int pin) {
         this->pin = pin;
     }
-
 
     string getAccountHolderName() const {
         return this->accountHolderName;
@@ -63,7 +68,6 @@ public:
         return this->pin;
     }
 
-    
     bool validatePIN(int enteredPIN) const {
         return this->pin == enteredPIN;
     }
@@ -90,7 +94,6 @@ public:
         }
     }
 
-    
     void displayAccountDetails() const {
         cout << "Account Holder: " << getAccountHolderName() << endl;
         cout << "Account Number: " << getAccountNumber() << endl;
@@ -111,27 +114,28 @@ public:
         cout << "ATM object created" << endl;
     }
 
+    ATM(BankAccount* account) : currentAccount(account) {
+        totalATMs++;
+        cout << "ATM object with account created" << endl;
+    }
+
     ~ATM() {
         totalATMs--;
         cout << "ATM object destroyed" << endl;
     }
 
-    
     static int getTotalATMs() {
         return totalATMs;
     }
 
-    
     void setCurrentAccount(BankAccount* account) {
         this->currentAccount = account;
     }
 
-    
     BankAccount* getCurrentAccount() const {
         return this->currentAccount;
     }
 
-    
     bool selectAccount(BankAccount* accounts[], int totalAccounts, int enteredAccountNumber, int enteredPIN) {
         for (int i = 0; i < totalAccounts; ++i) {
             if (accounts[i]->getAccountNumber() == enteredAccountNumber) {
@@ -149,7 +153,6 @@ public:
         return false;
     }
 
-   
     void showMenu() {
         int choice;
         double amount;
@@ -186,7 +189,6 @@ public:
         } while (choice != 4);
     }
 
-   
     void depositMoney(double amount) {
         if (getCurrentAccount()) {
             getCurrentAccount()->deposit(amount);  
