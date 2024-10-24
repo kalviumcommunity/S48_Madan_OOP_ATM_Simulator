@@ -3,12 +3,12 @@
 using namespace std;
 
 class BankAccount {
-private:
-    string accountHolderName;  
-    int accountNumber;         
-    double balance;            
-    int pin;                   
-    static int totalAccounts;  
+protected:
+    string accountHolderName;
+    int accountNumber;
+    double balance;
+    int pin;
+    static int totalAccounts;
 
 public:
     BankAccount() {
@@ -28,7 +28,6 @@ public:
     }
 
     ~BankAccount() {
-        cout << "BankAccount object for " << getAccountHolderName() << " destroyed" << endl;
         totalAccounts--;
     }
 
@@ -74,7 +73,7 @@ public:
 
     void deposit(double amount) {
         if (amount >= 500) {
-            setBalance(getBalance() + amount);  
+            setBalance(getBalance() + amount);
             cout << "Deposit successful! New Balance: Rs" << getBalance() << endl;
         } else {
             cout << "Minimum deposit amount is Rs 500!" << endl;
@@ -84,7 +83,7 @@ public:
     void withdraw(double amount) {
         if (amount >= 500) {
             if (amount <= getBalance()) {
-                setBalance(getBalance() - amount);  
+                setBalance(getBalance() - amount);
                 cout << "Withdrawal successful! Remaining Balance: Rs" << getBalance() << endl;
             } else {
                 cout << "Insufficient funds! Available Balance: Rs" << getBalance() << endl;
@@ -103,20 +102,50 @@ public:
 
 int BankAccount::totalAccounts = 0;
 
+
+class SavingsAccount : public BankAccount {
+private:
+    double interestRate;
+
+public:
+    SavingsAccount(string name, int number, double initialBalance, int accountPIN, double rate)
+        : BankAccount(name, number, initialBalance, accountPIN), interestRate(rate) {}
+
+    void addInterest() {
+        double interest = getBalance() * interestRate / 100;
+        deposit(interest);
+        cout << "Interest added: Rs" << interest << endl;
+    }
+};
+
+
+class CurrentAccount : public BankAccount {
+private:
+    double transactionLimit;
+
+public:
+    CurrentAccount(string name, int number, double initialBalance, int accountPIN, double limit)
+        : BankAccount(name, number, initialBalance, accountPIN), transactionLimit(limit) {}
+
+    void withdraw(double amount) {
+        if (amount > transactionLimit) {
+            cout << "Transaction limit exceeded! Maximum allowable: Rs" << transactionLimit << endl;
+        } else {
+            BankAccount::withdraw(amount);  // Reuse withdraw logic from base class
+        }
+    }
+};
+
+// ATM class manages BankAccount objects
 class ATM {
 private:
-    BankAccount* currentAccount;  
-    static int totalATMs;         
+    BankAccount* currentAccount;
+    static int totalATMs;
 
 public:
     ATM() : currentAccount(nullptr) {
         totalATMs++;
         cout << "ATM object created" << endl;
-    }
-
-    ATM(BankAccount* account) : currentAccount(account) {
-        totalATMs++;
-        cout << "ATM object with account created" << endl;
     }
 
     ~ATM() {
@@ -140,7 +169,7 @@ public:
         for (int i = 0; i < totalAccounts; ++i) {
             if (accounts[i]->getAccountNumber() == enteredAccountNumber) {
                 if (accounts[i]->validatePIN(enteredPIN)) {
-                    setCurrentAccount(accounts[i]);  
+                    setCurrentAccount(accounts[i]);
                     cout << "Welcome, " << getCurrentAccount()->getAccountHolderName() << "!" << endl;
                     return true;
                 } else {
@@ -191,7 +220,7 @@ public:
 
     void depositMoney(double amount) {
         if (getCurrentAccount()) {
-            getCurrentAccount()->deposit(amount);  
+            getCurrentAccount()->deposit(amount);
         } else {
             cout << "No account selected!" << endl;
         }
@@ -199,7 +228,7 @@ public:
 
     void withdrawMoney(double amount) {
         if (getCurrentAccount()) {
-            getCurrentAccount()->withdraw(amount);  
+            getCurrentAccount()->withdraw(amount);
         } else {
             cout << "No account selected!" << endl;
         }
@@ -207,7 +236,7 @@ public:
 
     void displayBalance() {
         if (getCurrentAccount()) {
-            getCurrentAccount()->displayAccountDetails();  
+            getCurrentAccount()->displayAccountDetails();
         } else {
             cout << "No account selected!" << endl;
         }
@@ -215,7 +244,7 @@ public:
 
     void clearAccount() {
         if (getCurrentAccount()) {
-            setCurrentAccount(nullptr);  
+            setCurrentAccount(nullptr);
             cout << "Session ended." << endl;
         } else {
             cout << "No account selected!" << endl;
@@ -228,18 +257,18 @@ int ATM::totalATMs = 0;
 int main() {
     BankAccount* accounts[] = {
         new BankAccount("John Doe", 123456, 5000.0, 1234),
-        new BankAccount("Jane Smith", 789012, 1000.0, 5678),
-        new BankAccount("Alice Johnson", 345678, 1500.0, 9012),
-        new BankAccount("Michael Brown", 456789, 2000.0, 2345),
-        new BankAccount("Emily Davis", 567890, 1200.0, 6789),
-        new BankAccount("Chris Wilson", 678901, 750.0, 3456),
-        new BankAccount("Olivia Garcia", 789012, 3000.0, 7890),
-        new BankAccount("Daniel Martinez", 890123, 500.0, 1235),
-        new BankAccount("Sophia Lee", 901234, 1500.0, 6781),
-        new BankAccount("Ethan Harris", 123789, 2200.0, 9876),
-        new BankAccount("Mia Clark", 234890, 950.0, 5432),
-        new BankAccount("James Lewis", 345901, 1700.0, 6543),
-        new BankAccount("Ava Robinson", 456012, 1250.0, 3210)
+        new SavingsAccount("Jane Smith", 789012, 1000.0, 5678, 3.5),
+        new CurrentAccount("Alice Johnson", 345678, 2000.0, 9012, 10000.0),
+        new BankAccount("David Lee", 111222, 2500.0, 4321),
+        new SavingsAccount("Emily Clark", 333444, 8000.0, 8765, 2.0),
+        new CurrentAccount("Michael Brown", 555666, 5000.0, 2468, 15000.0),
+        new BankAccount("Sophia Miller", 777888, 4500.0, 1357),
+        new SavingsAccount("Oliver Davis", 999000, 1200.0, 9876, 4.0),
+        new CurrentAccount("Charlotte Wilson", 101112, 3000.0, 1212, 20000.0),
+        new BankAccount("Henry Moore", 131415, 6000.0, 3434),
+        new SavingsAccount("Amelia Taylor", 161718, 7500.0, 5656, 3.5),
+        new CurrentAccount("James Anderson", 192021, 5000.0, 7878, 12000.0),
+        new BankAccount("Liam Thomas", 222324, 3500.0, 9090)
     };
     
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
