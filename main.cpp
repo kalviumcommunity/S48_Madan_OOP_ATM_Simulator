@@ -71,13 +71,19 @@ public:
         return this->pin == enteredPIN;
     }
 
-    void deposit(double amount) {
-        if (amount >= 500) {
-            setBalance(getBalance() + amount);
-            cout << "Deposit successful! New Balance: Rs" << getBalance() << endl;
-        } else {
-            cout << "Minimum deposit amount is Rs 500!" << endl;
+
+    void deposit(double amount) { 
+        if (amount >= 500) { 
+            setBalance(getBalance() + amount); 
+            cout<< "Deposit successful! New Balance: Rs" << getBalance() <<endl; 
+        } else { 
+            cout<< "Minimum deposit amount is Rs 500!" <<endl; 
         }
+    }
+
+    void deposit(double amount, string message) {
+        cout << message << endl;
+        deposit(amount); 
     }
 
     void withdraw(double amount) {
@@ -102,7 +108,6 @@ public:
 
 int BankAccount::totalAccounts = 0;
 
-
 class SavingsAccount : public BankAccount {
 private:
     double interestRate;
@@ -113,11 +118,9 @@ public:
 
     void addInterest() {
         double interest = getBalance() * interestRate / 100;
-        deposit(interest);
-        cout << "Interest added: Rs" << interest << endl;
+        deposit(interest, "Interest added to your savings account");
     }
 };
-
 
 class CurrentAccount : public BankAccount {
 private:
@@ -131,12 +134,11 @@ public:
         if (amount > transactionLimit) {
             cout << "Transaction limit exceeded! Maximum allowable: Rs" << transactionLimit << endl;
         } else {
-            BankAccount::withdraw(amount);  // Reuse withdraw logic from base class
+            BankAccount::withdraw(amount);  
         }
     }
 };
 
-// ATM class manages BankAccount objects
 class ATM {
 private:
     BankAccount* currentAccount;
@@ -220,7 +222,7 @@ public:
 
     void depositMoney(double amount) {
         if (getCurrentAccount()) {
-            getCurrentAccount()->deposit(amount);
+            getCurrentAccount()->deposit(amount, "Depositing to your account");
         } else {
             cout << "No account selected!" << endl;
         }
@@ -290,6 +292,10 @@ int main() {
     cout << "Total ATMs: " << ATM::getTotalATMs() << endl;
 
     delete myATM;
+
+    for (int i = 0; i < totalAccounts; ++i) {
+        delete accounts[i];
+    }
 
     return 0;
 }
