@@ -11,99 +11,60 @@ protected:
     static int totalAccounts;
 
 public:
-    BankAccount() {
-        accountHolderName = "Unknown";
-        accountNumber = 0;
-        balance = 0.0;
-        pin = 0000;
+    BankAccount() : accountHolderName("Unknown"), accountNumber(0), balance(0.0), pin(0000) {
         totalAccounts++;
     }
 
-    BankAccount(string name, int number, double initialBalance, int accountPIN) {
-        setAccountHolderName(name);
-        setAccountNumber(number);
-        setBalance(initialBalance);
-        setPIN(accountPIN);
+    BankAccount(string name, int number, double initialBalance, int accountPIN) 
+        : accountHolderName(name), accountNumber(number), balance(initialBalance), pin(accountPIN) {
         totalAccounts++;
     }
 
-    ~BankAccount() {
-        totalAccounts--;
-    }
+    virtual ~BankAccount() { totalAccounts--; }
 
-    static int getTotalAccounts() {
-        return totalAccounts;
-    }
+    static int getTotalAccounts() { return totalAccounts; }
 
-    void setAccountHolderName(string name) {
-        this->accountHolderName = name;
-    }
+    void setAccountHolderName(string name) { accountHolderName = name; }
+    void setAccountNumber(int number) { accountNumber = number; }
+    void setBalance(double bal) { balance = bal; }
+    void setPIN(int accountPIN) { pin = accountPIN; }
 
-    void setAccountNumber(int number) {
-        this->accountNumber = number;
-    }
+    string getAccountHolderName() const { return accountHolderName; }
+    int getAccountNumber() const { return accountNumber; }
+    double getBalance() const { return balance; }
+    int getPIN() const { return pin; }
 
-    void setBalance(double balance) {
-        this->balance = balance;
-    }
+    bool validatePIN(int enteredPIN) const { return pin == enteredPIN; }
 
-    void setPIN(int pin) {
-        this->pin = pin;
-    }
-
-    string getAccountHolderName() const {
-        return this->accountHolderName;
-    }
-
-    int getAccountNumber() const {
-        return this->accountNumber;
-    }
-
-    double getBalance() const {
-        return this->balance;
-    }
-
-    int getPIN() const {
-        return this->pin;
-    }
-
-    bool validatePIN(int enteredPIN) const {
-        return this->pin == enteredPIN;
-    }
-
-
-    void deposit(double amount) { 
-        if (amount >= 500) { 
-            setBalance(getBalance() + amount); 
-            cout<< "Deposit successful! New Balance: Rs" << getBalance() <<endl; 
-        } else { 
-            cout<< "Minimum deposit amount is Rs 500!" <<endl; 
+    virtual void deposit(double amount, string message = "") {
+        if (!message.empty()) cout << message << endl;
+        if (amount >= 500) {
+            balance += amount;
+            cout << "Deposit successful! New Balance: Rs" << balance << endl;
+        } else {
+            cout << "Minimum deposit amount is Rs 500!" << endl;
         }
     }
 
-    void deposit(double amount, string message) {
-        cout << message << endl;
-        deposit(amount); 
-    }
-
-    void withdraw(double amount) {
-        if (amount >= 500) {
-            if (amount <= getBalance()) {
-                setBalance(getBalance() - amount);
-                cout << "Withdrawal successful! Remaining Balance: Rs" << getBalance() << endl;
-            } else {
-                cout << "Insufficient funds! Available Balance: Rs" << getBalance() << endl;
-            }
-        } else {
+    virtual void withdraw(double amount) {
+        if (amount >= 500 && amount <= balance) {
+            balance -= amount;
+            cout << "Withdrawal successful! Remaining Balance: Rs" << balance << endl;
+        } else if (amount < 500) {
             cout << "Minimum withdrawal amount is Rs 500!" << endl;
+        } else {
+            cout << "Insufficient funds! Available Balance: Rs" << balance << endl;
         }
     }
 
     void displayAccountDetails() const {
-        cout << "Account Holder: " << getAccountHolderName() << endl;
-        cout << "Account Number: " << getAccountNumber() << endl;
-        cout << "Balance: Rs" << getBalance() << endl;
+        cout << "Account Holder: " << accountHolderName << endl;
+        cout << "Account Number: " << accountNumber << endl;
+        cout << "Balance: Rs" << balance << endl;
     }
+
+    virtual string accountType() const = 0; 
+    
 };
 
 int BankAccount::totalAccounts = 0;
@@ -117,9 +78,11 @@ public:
         : BankAccount(name, number, initialBalance, accountPIN), interestRate(rate) {}
 
     void addInterest() {
-        double interest = getBalance() * interestRate / 100;
+        double interest = balance * interestRate / 100;
         deposit(interest, "Interest added to your savings account");
     }
+
+    string accountType() const override { return "Savings Account"; }
 };
 
 class CurrentAccount : public BankAccount {
@@ -130,13 +93,15 @@ public:
     CurrentAccount(string name, int number, double initialBalance, int accountPIN, double limit)
         : BankAccount(name, number, initialBalance, accountPIN), transactionLimit(limit) {}
 
-    void withdraw(double amount) {
+    void withdraw(double amount) override {
         if (amount > transactionLimit) {
             cout << "Transaction limit exceeded! Maximum allowable: Rs" << transactionLimit << endl;
         } else {
-            BankAccount::withdraw(amount);  
+            BankAccount::withdraw(amount);
         }
     }
+
+    string accountType() const override { return "Current Account"; }
 };
 
 class ATM {
@@ -155,24 +120,18 @@ public:
         cout << "ATM object destroyed" << endl;
     }
 
-    static int getTotalATMs() {
-        return totalATMs;
-    }
+    static int getTotalATMs() { return totalATMs; }
 
-    void setCurrentAccount(BankAccount* account) {
-        this->currentAccount = account;
-    }
+    void setCurrentAccount(BankAccount* account) { currentAccount = account; }
 
-    BankAccount* getCurrentAccount() const {
-        return this->currentAccount;
-    }
+    BankAccount* getCurrentAccount() const { return currentAccount; }
 
     bool selectAccount(BankAccount* accounts[], int totalAccounts, int enteredAccountNumber, int enteredPIN) {
         for (int i = 0; i < totalAccounts; ++i) {
             if (accounts[i]->getAccountNumber() == enteredAccountNumber) {
                 if (accounts[i]->validatePIN(enteredPIN)) {
                     setCurrentAccount(accounts[i]);
-                    cout << "Welcome, " << getCurrentAccount()->getAccountHolderName() << "!" << endl;
+                    cout << "Welcome, " << currentAccount->getAccountHolderName() << " (" << currentAccount->accountType() << ")!" << endl;
                     return true;
                 } else {
                     cout << "Invalid PIN! Access denied." << endl;
@@ -221,32 +180,32 @@ public:
     }
 
     void depositMoney(double amount) {
-        if (getCurrentAccount()) {
-            getCurrentAccount()->deposit(amount, "Depositing to your account");
+        if (currentAccount) {
+            currentAccount->deposit(amount, "Depositing to your account");
         } else {
             cout << "No account selected!" << endl;
         }
     }
 
     void withdrawMoney(double amount) {
-        if (getCurrentAccount()) {
-            getCurrentAccount()->withdraw(amount);
+        if (currentAccount) {
+            currentAccount->withdraw(amount);
         } else {
             cout << "No account selected!" << endl;
         }
     }
 
     void displayBalance() {
-        if (getCurrentAccount()) {
-            getCurrentAccount()->displayAccountDetails();
+        if (currentAccount) {
+            currentAccount->displayAccountDetails();
         } else {
             cout << "No account selected!" << endl;
         }
     }
 
     void clearAccount() {
-        if (getCurrentAccount()) {
-            setCurrentAccount(nullptr);
+        if (currentAccount) {
+            currentAccount = nullptr;
             cout << "Session ended." << endl;
         } else {
             cout << "No account selected!" << endl;
@@ -258,19 +217,19 @@ int ATM::totalATMs = 0;
 
 int main() {
     BankAccount* accounts[] = {
-        new BankAccount("John Doe", 123456, 5000.0, 1234),
-        new SavingsAccount("Jane Smith", 789012, 1000.0, 5678, 3.5),
+        new SavingsAccount("John Doe", 123456, 5000.0, 1234, 3.5),
         new CurrentAccount("Alice Johnson", 345678, 2000.0, 9012, 10000.0),
-        new BankAccount("David Lee", 111222, 2500.0, 4321),
-        new SavingsAccount("Emily Clark", 333444, 8000.0, 8765, 2.0),
-        new CurrentAccount("Michael Brown", 555666, 5000.0, 2468, 15000.0),
-        new BankAccount("Sophia Miller", 777888, 4500.0, 1357),
-        new SavingsAccount("Oliver Davis", 999000, 1200.0, 9876, 4.0),
-        new CurrentAccount("Charlotte Wilson", 101112, 3000.0, 1212, 20000.0),
-        new BankAccount("Henry Moore", 131415, 6000.0, 3434),
-        new SavingsAccount("Amelia Taylor", 161718, 7500.0, 5656, 3.5),
-        new CurrentAccount("James Anderson", 192021, 5000.0, 7878, 12000.0),
-        new BankAccount("Liam Thomas", 222324, 3500.0, 9090)
+        new SavingsAccount("Emily Roberts", 987654, 3000.0, 5678, 4.0),
+        new SavingsAccount("Michael Smith", 234567, 1500.0, 8765, 3.0),
+        new CurrentAccount("Sarah Wilson", 345679, 8000.0, 5432, 5000.0),
+        new CurrentAccount("David Johnson", 456780, 7000.0, 6789, 15000.0),
+        new SavingsAccount("Jessica Brown", 567890, 12000.0, 3456, 5.0),
+        new SavingsAccount("James Taylor", 678901, 4500.0, 2345, 2.5),
+        new CurrentAccount("Linda Green", 789012, 2500.0, 1235, 20000.0),
+        new CurrentAccount("Robert White", 890123, 3000.0, 3457, 10000.0),
+        new SavingsAccount("Patricia Harris", 901234, 6000.0, 5678, 3.8),
+        new CurrentAccount("William Thompson", 112233, 9500.0, 6789, 12000.0)
+
     };
     
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
