@@ -38,11 +38,11 @@ public:
 
     virtual void deposit(double amount, string message = "") {
         if (!message.empty()) cout << message << endl;
-        if (amount >= 500) {
+        if (amount >= 1000) {
             balance += amount;
             cout << "Deposit successful! New Balance: Rs" << balance << endl;
         } else {
-            cout << "Minimum deposit amount is Rs 500!" << endl;
+            cout << "Minimum deposit amount is Rs 1000!" << endl;
         }
     }
 
