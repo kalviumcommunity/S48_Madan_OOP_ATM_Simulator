@@ -64,7 +64,6 @@ public:
     }
 
     virtual string accountType() const = 0; 
-    
 };
 
 int BankAccount::totalAccounts = 0;
@@ -102,6 +101,25 @@ public:
     }
 
     string accountType() const override { return "Current Account"; }
+};
+
+class PremiumSavingsAccount : public SavingsAccount {
+private:
+    double rewardAmount;
+
+public:
+    PremiumSavingsAccount(string name, int number, double initialBalance, int accountPIN, double rate, double reward)
+        : SavingsAccount(name, number, initialBalance, accountPIN, rate), rewardAmount(reward) {}
+
+    void deposit(double amount, string message = "") override {
+        SavingsAccount::deposit(amount, message);
+        if (amount > 5000) {
+            balance += rewardAmount;
+            cout << "Congratulations! You received a reward of Rs" << rewardAmount << " for depositing more than Rs5000!" << endl;
+        }
+    }
+
+    string accountType() const override { return "Premium Savings Account"; }
 };
 
 class ATM {
@@ -219,19 +237,22 @@ int main() {
     BankAccount* accounts[] = {
         new SavingsAccount("John Doe", 123456, 5000.0, 1234, 3.5),
         new CurrentAccount("Alice Johnson", 345678, 2000.0, 9012, 10000.0),
-        new SavingsAccount("Emily Roberts", 987654, 3000.0, 5678, 4.0),
+        new PremiumSavingsAccount("Sophia Brown", 456789, 10000.0, 3456, 4.0, 500.0),
         new SavingsAccount("Michael Smith", 234567, 1500.0, 8765, 3.0),
         new CurrentAccount("Sarah Wilson", 345679, 8000.0, 5432, 5000.0),
-        new CurrentAccount("David Johnson", 456780, 7000.0, 6789, 15000.0),
-        new SavingsAccount("Jessica Brown", 567890, 12000.0, 3456, 5.0),
-        new SavingsAccount("James Taylor", 678901, 4500.0, 2345, 2.5),
-        new CurrentAccount("Linda Green", 789012, 2500.0, 1235, 20000.0),
-        new CurrentAccount("Robert White", 890123, 3000.0, 3457, 10000.0),
-        new SavingsAccount("Patricia Harris", 901234, 6000.0, 5678, 3.8),
-        new CurrentAccount("William Thompson", 112233, 9500.0, 6789, 12000.0)
+        new SavingsAccount("Emma Watson", 789012, 3000.0, 6789, 2.5),
+        new CurrentAccount("James Anderson", 456781, 10000.0, 2345, 15000.0),
+        new PremiumSavingsAccount("Oliver Green", 567892, 20000.0, 9876, 4.2, 500.0),
+        new SavingsAccount("Emily Davis", 345678, 7000.0, 1122, 3.8),
+        new CurrentAccount("Liam White", 123489, 5000.0, 3344, 12000.0),
 
+        new PremiumSavingsAccount("Sophia Taylor", 789654, 25000.0, 5566, 4.5, 500.0),
+        new SavingsAccount("Isabella Hall", 890123, 4500.0, 7788, 3.2),
+        new CurrentAccount("Noah Moore", 123456, 15000.0, 9900, 20000.0),
+        new PremiumSavingsAccount("Mia Adams", 456123, 12000.0, 2233, 4.0, 500.0),
+        new SavingsAccount("Charlotte Turner", 567891, 6000.0, 4455, 3.7)
     };
-    
+
     int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
 
     ATM* myATM = new ATM();
