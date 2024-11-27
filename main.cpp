@@ -1,6 +1,29 @@
 #include <iostream>
 #include <string>
+#include <vector>
+#include <ctime>
 using namespace std;
+
+class TransactionLogger {
+private:
+    vector<string> logs;
+
+public:
+    void logTransaction(const string& log) {
+        logs.push_back(log);
+    }
+
+    void displayLogs() const {
+        if (logs.empty()) {
+            cout << "No transactions yet!" << endl;
+        } else {
+            cout << "Transaction History:" << endl;
+            for (const auto& log : logs) {
+                cout << "- " << log << endl;
+            }
+        }
+    }
+};
 
 class BankAccount {
 protected:
@@ -125,6 +148,7 @@ public:
 class ATM {
 private:
     BankAccount* currentAccount;
+    TransactionLogger logger; 
     static int totalATMs;
 
 public:
@@ -169,7 +193,8 @@ public:
             cout << "1. Deposit Money\n";
             cout << "2. Withdraw Money\n";
             cout << "3. Check Balance\n";
-            cout << "4. Exit\n";
+            cout << "4. Show Transaction History\n";
+            cout << "5. Exit\n";
             cout << "Enter your choice: ";
             cin >> choice;
 
@@ -188,18 +213,23 @@ public:
                     displayBalance();
                     break;
                 case 4:
+                    displayTransactionHistory();
+                    break;
+                case 5:
                     cout << "Thank you for using the ATM!" << endl;
                     clearAccount();
                     break;
                 default:
                     cout << "Invalid choice! Please try again." << endl;
             }
-        } while (choice != 4);
+        } while (choice != 5);
     }
 
     void depositMoney(double amount) {
         if (currentAccount) {
-            currentAccount->deposit(amount, "Depositing to your account");
+            string message = "Depositing to your account";
+            currentAccount->deposit(amount, message);
+            logger.logTransaction("Deposited Rs" + to_string(amount));
         } else {
             cout << "No account selected!" << endl;
         }
@@ -208,6 +238,7 @@ public:
     void withdrawMoney(double amount) {
         if (currentAccount) {
             currentAccount->withdraw(amount);
+            logger.logTransaction("Withdrew Rs" + to_string(amount));
         } else {
             cout << "No account selected!" << endl;
         }
@@ -216,9 +247,14 @@ public:
     void displayBalance() {
         if (currentAccount) {
             currentAccount->displayAccountDetails();
+            logger.logTransaction("Checked balance");
         } else {
             cout << "No account selected!" << endl;
         }
+    }
+
+    void displayTransactionHistory() {
+        logger.displayLogs();
     }
 
     void clearAccount() {
@@ -245,7 +281,6 @@ int main() {
         new PremiumSavingsAccount("Oliver Green", 567892, 20000.0, 9876, 4.2, 500.0),
         new SavingsAccount("Emily Davis", 345678, 7000.0, 1122, 3.8),
         new CurrentAccount("Liam White", 123489, 5000.0, 3344, 12000.0),
-
         new PremiumSavingsAccount("Sophia Taylor", 789654, 25000.0, 5566, 4.5, 500.0),
         new SavingsAccount("Isabella Hall", 890123, 4500.0, 7788, 3.2),
         new CurrentAccount("Noah Moore", 123456, 15000.0, 9900, 20000.0),
@@ -253,27 +288,20 @@ int main() {
         new SavingsAccount("Charlotte Turner", 567891, 6000.0, 4455, 3.7)
     };
 
-    int totalAccounts = sizeof(accounts) / sizeof(accounts[0]);
-
-    ATM* myATM = new ATM();
+    ATM atm;
 
     int enteredAccountNumber, enteredPIN;
-
-    cout << "Enter account number: ";
+    cout << "Welcome to the ATM!" << endl;
+    cout << "Please enter your account number: ";
     cin >> enteredAccountNumber;
-    cout << "Enter PIN: ";
+    cout << "Please enter your PIN: ";
     cin >> enteredPIN;
 
-    if (myATM->selectAccount(accounts, totalAccounts, enteredAccountNumber, enteredPIN)) {
-        myATM->showMenu();
+    if (atm.selectAccount(accounts, 15, enteredAccountNumber, enteredPIN)) {
+        atm.showMenu();
     }
 
-    cout << "Total Bank Accounts: " << BankAccount::getTotalAccounts() << endl;
-    cout << "Total ATMs: " << ATM::getTotalATMs() << endl;
-
-    delete myATM;
-
-    for (int i = 0; i < totalAccounts; ++i) {
+    for (int i = 0; i < 15; ++i) { 
         delete accounts[i];
     }
 
